@@ -79,6 +79,61 @@
 		math.js
 	 } 
 
+	 Day 3 – Server
+
+	Q1. What is a Server?
+
+	A server is a program that receives a request from a client, processes it, and sends a response back to the client.
+
+	Q2. Which module is used to create a server in Node.js?
+
+	The HTTP module is used to create a server in Node.js.
+
+	Q3. What is http.createServer()?
+
+	http.createServer() is used to create an HTTP server in Node.js.
+
+	Q4. What is req?
+
+	req represents the request received from the client.
+
+	Q5. What is res?
+
+	res represents the response sent by the server to the client.
+
+	Q6. What is res.writeHead()?
+
+	res.writeHead() is used to set the status code and response headers.
+
+	Q7. What is res.end()?
+
+	res.end() is used to end the response and send it to the client.
+
+	Q8. What is server.listen()?
+
+	server.listen() is used to start the server on a specific port.
+
+	Q9. Types of Server
+	HTTP Server
+	Custom Server
+	File Server
+	Routes Server
+	1. HTTP Server
+
+	An HTTP Server is a basic server created using the Node.js HTTP module.
+
+	2. Custom Server
+
+	A Custom Server is a server that sends a customized response to the client.
+
+	3. File Server
+
+	A File Server reads a file and sends its content to the client.
+
+	4. Routes Server
+
+	A Routes Server sends different responses or files according to the requested URL.
+
 
 
 
