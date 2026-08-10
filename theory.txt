@@ -1,0 +1,85 @@
+	Q1 what is node.js ?
+
+	Easier java script could run only in web browser. after node.js was introduced java script could also run in server.
+
+	
+	Q2 who develop a node.js ?
+	
+	node.js was developed by Ryan Dahl in 2009.
+
+	
+	Q3 what is runtime Environment ?
+
+	A runtime environment allows a programming language to run a computer.
+
+	
+	Q4 what is v8 engine ?
+
+	The v8 engine converts java script code into machine code execution much faster.
+
+
+	Q5 advantage is node.js ?
+
+	fast performance.
+
+	non blocking io.
+
+	Event-driven architecture
+
+	cross platform
+
+	open source
+
+	
+	Q6 disadvantage of node.js ?
+
+	single thread limitation.
+
+	security risks
+
+
+
+	day 2 module
+
+	A module is a separate java script file the contains related code such as function,variables,object or classes. it helps organize and reuse code.
+
+	type of module
+
+	1. core module 
+
+	2. local module
+
+	3. third-party module
+
+	 1.core module(built in module)
+
+	 definition
+
+	 => core module are built in module provided by node.js. they do not be installed.
+
+	 core module type
+	 {
+		fs	=>	File system.
+		http	=>	crete web server.
+		path	=>	file path.
+		os		=>	operating system.
+		url 	=> 	url handling.
+		Event 	=>	Event handling.
+	 }
+
+	 2.local module(custom module)
+
+	 definition
+
+	 =>local module are java script file created by developer and used within the project.
+
+	 local module type
+	 {
+		app.js
+		math.js
+	 } 
+
+
+
+
+
