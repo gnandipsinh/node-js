@@ -1,0 +1,16 @@
+{
+  "name": "03_express_js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "02_index.js",
+  "type": "module",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "scripts": {
+    "dev": "node 02_index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
