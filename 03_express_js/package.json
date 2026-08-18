@@ -2,13 +2,14 @@
   "name": "03_express_js",
   "version": "1.0.0",
   "description": "",
-  "main": "02_index.js",
+  "main": "03_Middleware.js",
   "type": "module",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
   },
   "scripts": {
-    "dev": "node 02_index.js"
+    "dev": "nodemon 03_Middleware.js"
   },
   "keywords": [],
   "author": "",
