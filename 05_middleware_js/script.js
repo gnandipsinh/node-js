@@ -3,16 +3,8 @@ import helmet from "helmet";
 
 const app = express();
 
-app.get("/", (req, res) => {
 
-    res.json({
-        message: "please check messages"
-    });
-
-});
-
-
-// 1. application level middleware
+// Application-Level Middleware
 
 app.use((req, res, next) => {
 
@@ -23,7 +15,17 @@ app.use((req, res, next) => {
 });
 
 
-// 2. Router-level Middleware
+// Built-in Middleware
+
+app.use(express.json());
+
+
+// External Middleware
+
+app.use(helmet());
+
+
+// Router-Level Middleware
 
 const router = express.Router();
 
@@ -50,23 +52,29 @@ router.get("/about", (req, res) => {
 app.use("/user", router);
 
 
-// 3. undefined routes handling
+// Main Route
 
-app.use((req, res) => {
+app.get("/", (req, res) => {
 
-    res.send("requested route not found");
+    res.json({
+        message: "Please check messages"
+    });
 
 });
 
 
-// 4. external middleware
+// Undefined Route Handling
 
-// router.use(helmet());
+app.use((req, res) => {
+
+    res.status(404).send("Requested route not found");
+
+});
 
 
-// 5. centralize middleware
+// Centralized Error Middleware
 
-router.use((error, req, res, next) => {
+app.use((error, req, res, next) => {
 
     if (res.headersSent) {
 
@@ -75,13 +83,13 @@ router.use((error, req, res, next) => {
     }
 
     res.status(error.statusCode || 500).json(
-        error.message || "internal server error"
+        error.message || "Internal Server Error"
     );
 
 });
 
 
-const port = 2000;
+const port = 3000;
 
 app.listen(port, (err) => {
 
