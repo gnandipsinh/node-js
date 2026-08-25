@@ -46,6 +46,23 @@ app.get("/taskList", (req, res, next) => {
 
 });
 
+    app.get("/taskList/:id",(req,res,next)=>
+    {
+        const {id}=req.params;
+
+        const task=taskList.find((t)=>t.id==Number(id));
+
+        if(!task==undefined)
+        {
+            return next(res.HttpError("Task not found",404));
+        }
+
+        return res.status(200).json({
+            message:"task retrieved successfully",task
+        });
+    });
+
+
 
 
 app.use((req, res, next) => {
