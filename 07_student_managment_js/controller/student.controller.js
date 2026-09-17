@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import HttpError from "../middleware/HttpError.js";
 
 import Student from "../model/Student.js";
@@ -46,12 +47,95 @@ const getAllStudentData = async (req, res, next) => {
 };
 
 const getStudentById = async (req, res, next) => {
+=======
+import httpError from "../middleware/httpError.js";
+import Student from "../model/StudentData.js";
+
+const add = async (req, res, next) => {
+  try {
+    const { name, email, GRID, Course, isActive } = req.body;
+
+    const newStudent = await new Student({
+      name,
+      email,
+      Course,
+      GRID,
+      isActive,
+    });
+
+    await newStudent.save();
+
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "Student data added successfully",
+        newStudent,
+      });
+  } catch (error) {
+    next(new httpError(error.message, 500));
+  }
+};
+
+// const add = async (req,res,next)=>{
+
+//     try{
+
+//         const {name,email,GRID,Course,isActive} = req.params;
+
+//         const newStudent = {
+
+//               name,
+//             email,
+//           Course,
+//             GRID,
+//            isActive
+
+//         }
+
+//         const student = await StudentModel.create(newStudent);
+
+//         if(!student){
+//             next(new httpError("failed to add student"));
+//         }
+
+//     }catch(error){
+//         next(new httpError(error.message,500));
+//     }
+
+// }
+
+const studentGetData = async (req, res, next) => {
+  try {
+    const student = await Student.find({});
+
+    if (student.length === 0) {
+      return res
+        .status(200)
+        .json({ success: true, message: "no student data found " });
+    }
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "student data fetched successfully",
+        student,
+      });
+  } catch (error) {
+    next(new httpError(error.message, 500));
+  }
+};
+
+const studentDataById = async (req, res, next) => {
+>>>>>>> 9a1c611 (new code added)
   try {
     const { id } = req.params;
 
     const student = await Student.findById(id);
 
     if (!student) {
+<<<<<<< HEAD
       return next(new HttpError("student not found with this id", 404));
     }
 
@@ -68,10 +152,30 @@ const deleteStudent = async (req, res, next) => {
 
     if (!deleteStudent) {
       return next(new HttpError("student not deleted with this id", 400));
+=======
+      return next(new httpError("student not found with this id", 404));
+    }
+
+    res.status(200).json({ success: true, message: "Student found", student });
+  } catch (error) {
+    next(new httpError(message.error, 500));
+  }
+};
+
+const studentDataDelete = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const student = await Student.findByIdAndDelete(id);
+
+    if (!student) {
+      return next(new httpError("student not delete with id ", 400));
+>>>>>>> 9a1c611 (new code added)
     }
 
     res
       .status(200)
+<<<<<<< HEAD
       .json({ success: true, message: "student data deleted successfully" });
   } catch (error) {
     next(new HttpError(error.message, 500));
@@ -82,6 +186,19 @@ const deleteAllData = async (req, res, next) => {
     const deletedData = await Student.deleteMany();
 
     if (!deletedData) {
+=======
+      .json({ success: true, message: "Student data delete successfully " });
+  } catch (error) {
+    next(new httpError(error.message, 500));
+  }
+};
+
+const deleteAllData = async (req, res, next) => {
+  try {
+    const student = await Student.deleteMany();
+
+    if (!student) {
+>>>>>>> 9a1c611 (new code added)
       return next(new HttpError("failed to delete data", 500));
     }
 
@@ -94,10 +211,84 @@ const deleteAllData = async (req, res, next) => {
   }
 };
 
+<<<<<<< HEAD
 export default {
   add,
   getAllStudentData,
   getStudentById,
   deleteStudent,
   deleteAllData,
+=======
+const StudentUpdateData = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const updateStudent = await Student.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updateStudent) {
+      return next(new httpError("student data not updated", 400));
+    }
+
+    return res
+      .status(400)
+      .json({
+        success: true,
+        message: "student data update successfully",
+        updateStudent,
+      });
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
+};
+
+const StudentUpdateManually = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const UpdateManually = await Student.findById(id);
+
+    if (!UpdateManually) {
+      return next(new httpError("Student not found with in id"));
+    }
+
+    const update = Object.keys(req.body);
+
+    const allowedFields = ["name", "Course"];
+
+    const ValidUpdate = update.every((u) => {
+      allowedFields.includes(u);
+    });
+
+    if (!ValidUpdate) {
+      return next(new httpError("only allowed field can be update", 400));
+    }
+
+    update.forEach((u) => (updateStudent[u] = req.body[update]));
+
+    await updateStudent.save();
+
+    res
+      .student(200)
+      .json({
+        success: true,
+        message: "student updated successfully",
+        updateStudent,
+      });
+  } catch (error) {
+    return next(new httpError(error.message));
+  }
+};
+
+export default {
+  add,
+  studentGetData,
+  studentDataById,
+  studentDataDelete,
+  deleteAllData,
+  StudentUpdateData,
+  StudentUpdateManually,
+>>>>>>> 9a1c611 (new code added)
 };
