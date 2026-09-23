@@ -2,11 +2,17 @@ import express from "express";
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js";
 
+import employeeRoutes from "./routes/employeeRoutes.js";
+
 const app = express();
+
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.json({ message: "hello from my new server" });
 });
+
+app.use("/api/employees", employeeRoutes);
 
 // Undefined Routes
 
