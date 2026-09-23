@@ -1,16 +1,17 @@
 import mongoose from "mongoose";
 
-async function connectDB() {
+const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/sms");
-    console.log("MongoDB connected successfully");
+    await mongoose.connect(process.env.MONGO_URI);
+
+    console.log("MongoDB connected");
 
     return true;
   } catch (error) {
-    console.log("MongoDB connection failed", error);
+    console.log(error.message);
 
     return false;
   }
-}
+};
 
 export default connectDB;

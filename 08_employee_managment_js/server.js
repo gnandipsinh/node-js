@@ -1,4 +1,5 @@
 import express from "express";
+import "dotenv/config";
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js";
 
