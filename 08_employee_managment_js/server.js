@@ -2,8 +2,7 @@ import express from "express";
 import "dotenv/config";
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js";
-
-import employeeRoutes from "./routes/employeeRoutes.js";
+import employeeRoutes from "./routes/employee.Routes.js";
 
 const app = express();
 
