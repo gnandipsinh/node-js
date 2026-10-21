@@ -1,122 +1,87 @@
 
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
-const UserSchema = new mongoose.Schema({
-
-    name:{
-        type:String,
-        required:true,
-        trim:true
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    email:{
-        type:String,
-        required:true,
-        trim:true,
-        unique:true
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
     },
-    password:{
-        type:String,
-        required:true,
-        trim:true,
-        minlength:6,
-        validate:(value)=>{
-            if(value.toLowerCase() === "password"){
-                return "password can't contain password word as password "
-            } 
-            message:"Password cannot contain the word 'password'."
-        }
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+      select: false,
+      validate: {
+        validator(value) {
+          return !value.toLowerCase().includes("password");
+        },
+        message: "Password cannot contain the word password.",
+      },
     },
-    tokens:[
-        {
-            token:{
-                type:String,
-                required:true
-            }
-        }
-    ]
-    
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-},{
-    timeseries:true
-})
-
-
-UserSchema.pre("save", async function () {
-
-    try{
-        const user = this
-
-        if (user.isModified("password")) {
-        user.password = await bcrypt.hash(this.password, 10);
-    }
-    }catch(error){
-        throw new Error(error.message)
-    }
-    
+userSchema.pre("save", async function () {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 });
 
+userSchema.statics.findByCredential = async function (email, password) {
+  const user = await this.findOne({
+    email: email.toLowerCase().trim(),
+  }).select("+password");
 
-UserSchema.statics.findByCredential = async function (email, password) {
-    console.log("Email received:", email);
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
 
-    const user = await this.findOne({ email });
+  const matched = await bcrypt.compare(password, user.password);
 
-    console.log("User found:", !!user);
+  if (!matched) {
+    throw new Error("Invalid email or password");
+  }
 
-    if (!user) {
-        throw new Error("Email not found in database");
-    }
-
-    console.log("Stored password hash:", user.password);
-
-    const isMatched = await bcrypt.compare(password, user.password);
-
-    console.log("Password matched:", isMatched);
-
-    if (!isMatched) {
-        throw new Error("Password does not match");
-    }
-
-    return user;
+  return user;
 };
 
-UserSchema.methods.generateAuthToken = async function () {
+userSchema.methods.generateAuthToken = async function () {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is missing in .env");
+  }
 
-    try {
+  const token = jwt.sign(
+    { _id: this._id.toString() },
+    process.env.JWT_SECRET,
+    { expiresIn: "9d" }
+  );
 
-        const user = this;
+  this.tokens.push({ token });
+  await this.save();
 
-        const token = jwt.sign({
-            _id:user._id.toString()
-        },
-       process.env.JWT_SECRET,{
-        expiresIn:"9d"
-       }
-    )
+  return token;
+};
 
-    console.log("token",token)
-    
-        if (!token) {
-      throw new Error("failed to generate auth token");
-    }
-
-    user.tokens = user.tokens.concat({token});
-
-    await user.save();
-
-    return token;
-
-    } catch (error) {
-        
-        throw new Error(error.message)
-
-    }
-    
-}
-
-
-const User = mongoose.model("user model data",UserSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

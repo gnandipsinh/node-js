@@ -1,49 +1,41 @@
-import httpError from "../middleware/httpError.js";
-import userModel from "../model/userData.js";
-import jwt from "jsonwebtoken";
+
+import User from "../model/usermodel.js";
+import HttpError from "../middleware/httpError.js";
 
 const add = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
-    const newUser = await userModel.create({
-      name,
-      email,
-      password,
-    });
+    if (!name || !email || !password) {
+      return next(new HttpError("Name, email and password are required", 400));
+    }
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: "user data added successfully",
-        newUser,
-      });
+    const newUser = await User.create({ name, email, password });
+
+    res.status(201).json({
+      success: true,
+      message: "User added successfully",
+      user: newUser,
+    });
   } catch (error) {
-    return next(new httpError(error.message));
+    if (error.code === 11000) {
+      return next(new HttpError("Email already exists", 409));
+    }
+    return next(new HttpError(error.message, 400));
   }
 };
 
 const getAll = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const users = await User.find();
 
-    const all = await userModel.find({});
-
-    if (all.length === 0) {
-      return next(new httpError("user data not found"));
-    }
-
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "all user found successfully",
-        total: all.length,
-        all,
-      });
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      users,
+    });
   } catch (error) {
-    return next(new httpError(error.message, 500));
+    return next(new HttpError(error.message, 500));
   }
 };
 
@@ -51,22 +43,47 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Step 1: Verify email and password
-    const user = await userModel.findByCredential(email, password);
+    if (!email || !password) {
+      return next(new HttpError("Email and password are required", 400));
+    }
 
-    // Step 2: Generate and save token
+    const user = await User.findByCredential(email, password);
     const token = await user.generateAuthToken();
 
-    // Step 3: Send token in response
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      message: "User login successfully",
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
       token,
-      user,
     });
   } catch (error) {
-    return next(new httpError(error.message, 400));
+    return next(new HttpError(error.message, 401));
   }
 };
 
-export default { add, getAll, login };
+const authLogin = (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Authenticated user",
+    user: req.user,
+  });
+};
+
+const deleteUser = async (req, res, next) => {
+  try {
+    await User.deleteOne({ _id: req.user._id });
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
+};
+
+export default { add, getAll, login, authLogin, deleteUser };

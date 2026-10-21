@@ -1,35 +1,32 @@
-import httpError from "./httpError.js";
-import user from "../model/userData.js";
+
 import jwt from "jsonwebtoken";
-import User from "../model/userData.js";
+import User from "../model/usermodel.js";
+import HttpError from "../middleware/httpError.js";
 
 const auth = async (req, res, next) => {
   try {
-    const authHeader = req.header("Authorization");
+    const authHeader = req.headers.authorization;
 
-    console.log("auth header", authHeader);
-
-    if (!authHeader) {
-      return next(new httpError("auth header is required", 400));
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return next(
+        new HttpError("Authorization token is required", 401)
+      );
     }
 
-    const token = authHeader.replace("Bearer ", "");
+    if (!process.env.JWT_SECRET) {
+      return next(new HttpError("JWT_SECRET is not configured", 500));
+    }
 
-    console.log("token", token);
+    const token = authHeader.slice(7);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const decode = jwt.verify(token, process.env.JWT_SECRET);
-
-    console.log("decode", decode);
-
-    const User = await user.findOne({
-      _id: decode._id,
-      "tokens.taken": token,
+    const user = await User.findOne({
+      _id: decoded._id,
+      "tokens.token": token,
     });
 
-    console.log("user", User);
-
     if (!user) {
-      next(new httpError("unauthorize access", 401));
+      return next(new HttpError("Unauthorized access", 401));
     }
 
     req.user = user;
@@ -37,7 +34,7 @@ const auth = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return next(new httpError(error.message));
+    return next(new HttpError("Invalid or expired token", 401));
   }
 };
 
